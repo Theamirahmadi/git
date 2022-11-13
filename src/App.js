@@ -23,6 +23,7 @@ function App() {
         <h1>{error}</h1>
       ) : (
         <div>
+          <p>test</p>
           <input
             type="text"
             onChange={(e) =>
@@ -94,8 +95,10 @@ function App() {
                 </div>
               ))}
           </div>
+          <p>test</p>
         </div>
       )}
+      <p>test</p>
     </div>
   );
 }
