@@ -16,6 +16,7 @@ function App() {
 
   return (
     <div className="App">
+      <p>test</p>
       {loading ? (
         <Spinner animation="grow" variant="danger" />
       ) : error ? (
