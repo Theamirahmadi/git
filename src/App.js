@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,30 +13,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeNumber, changeTitle, getData } from "./redux/action";
 
 function App() {
+  const [Sort, setSort] = useState("");
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.coins);
   const search = useSelector((state) => state.search);
   useEffect(() => {
     dispatch(getData());
   }, []);
-
+  const image = useRef();
+  console.log(image)
   return (
     <div className="App">
-      <p>test</p>
+      <button onClick={()=>image.current.style.color="white"}>changeColor</button>
       {loading ? (
         <Spinner animation="grow" variant="danger" />
       ) : error ? (
         <h1>{error}</h1>
       ) : (
         <div>
-          <p>test</p>
           <input
             type="text"
             onChange={(e) =>
               dispatch({ type: "search", payload: e.target.value })
             }
           />
-          <select>
+          <select onChange={(e) => setSort(e.target.value)}>
             <option>market cap</option>
             <option>highest</option>
             <option>lowest</option>
@@ -54,17 +61,38 @@ function App() {
                 color: "lightblue",
               }}
             >
-              <p>image</p>
+              <p ref={image} style={{color:"red"}}>image</p>
               <p>symbol</p>
               <p>name</p>
               <p>price</p>
               <p>market cap</p>
             </div>
             {data
+              .sort((x, y) => {
+                switch (Sort) {
+                  case "market cap":
+                    return y.market_cap - x.market_cap;
+                  case "highest":
+                    return y.current_price - x.current_price;
+                  case "lowest":
+                    return x.current_price - y.current_price;
+                  case "A-Z":
+                    return x.name.localeCompare(y.name);
+                  case "Z-A":
+                    return y.name.localeCompare(x.name);
+
+                  default:
+                    return y.market_cap - x.market_cap;
+                }
+              })
               .filter(
                 (item) =>
-                  item.name.toLowerCase().includes(search.toLowerCase()) ||
-                  item.symbol.toLowerCase().includes(search.toLowerCase())
+                  item.name
+                    .toLowerCase()
+                    .includes(search.trim().toLowerCase()) ||
+                  item.symbol
+                    .toLowerCase()
+                    .includes(search.trim().toLowerCase())
               )
               .map((item) => (
                 <div
@@ -95,10 +123,8 @@ function App() {
                 </div>
               ))}
           </div>
-          <p>test</p>
         </div>
       )}
-      <p>test</p>
     </div>
   );
 }
